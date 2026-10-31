@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ShortsForge AI — The Best YouTube to Shorts & Reels Studio</title>
+  <meta name="description" content="Convert any YouTube video into multiple viral high-retention 9:16 Shorts with dynamic captions, AI virality scoring, custom thumbnails, and smart reframing in one click.">
+  
+  <!-- Modern Typography from Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Outfit:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="style.css?v=2.8.0">
+</head>
+<body>
+  <div class="app-layout">
+    
+    <!-- Top Navigation Bar -->
+    <header class="studio-header">
+      <div class="header-left">
+        <div class="brand-logo" id="logoBtn">
+          <div class="logo-icon-wrapper">
+            <svg class="logo-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="5 3 19 12 5 21 5 3" fill="url(#logoGrad)"></polygon>
+              <defs>
+                <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#8b5cf6" />
+                  <stop offset="100%" stop-color="#06b6d4" />
+                </linearGradient>
+              </defs>
+            </svg>
+            <span class="sparkle-dot"></span>
+          </div>
+          <div class="brand-text">
+            <div class="brand-title">ShortsForge <span class="badge-ai">AI 2.5</span></div>
+            <div class="brand-subtitle">YouTube to Viral Shorts Studio</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="header-center">
+        <div class="engine-status-pill">
+          <span class="status-indicator-pulse"></span>
+          <span class="engine-status-text">AI Scene Intelligence: <strong>Ready</strong></span>
+          <span class="divider-dot">•</span>
+          <span class="render-spec">4K 60FPS Render</span>
+        </div>
+      </div>
+
+      <div class="header-right">
+        <button class="btn btn-secondary btn-sm" id="btnUploadLocal" title="Upload local MP4/MOV file">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+          Upload Video
+        </button>
+        <button class="btn btn-secondary btn-sm" id="btnDemoPresets">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+          Viral Presets
+        </button>
+        <button class="btn btn-primary btn-sm" id="btnBatchExport" style="display: none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          Batch Export
+        </button>
+      </div>
+    </header>
+
+    <!-- Hidden Native File Input for local video uploading -->
+    <input type="file" id="localVideoFileInput" accept="video/mp4,video/webm,video/quicktime" style="display: none;">
+
+    <!-- MAIN APP CONTAINER -->
+    <main class="main-content">
+
+      <!-- ============================================== -->
+      <!-- SECTION 1: HERO INPUT (Paste Link & Generate) -->
+      <!-- ============================================== -->
+      <section class="hero-section" id="heroSection">
+        <div class="hero-glow-sphere"></div>
+        <div class="hero-content">
+          
+          <div class="hero-pill-badge">
+            <span class="sparkle-icon">✨</span>
+            <span>Next-Gen YouTube to Vertical Shorts AI Engine</span>
+          </div>
+
+          <h1 class="hero-title">
+            Paste Any YouTube Link.<br>
+            <span class="gradient-text">Get 5 Viral Shorts in Seconds.</span>
+          </h1>
+
+          <p class="hero-description">
+            Automatic scene detection, hook extraction, speaker-centering 9:16 reframe, animated dynamic captions, viral virality scoring, and custom thumbnail generator.
+          </p>
+
+          <!-- The Input Card -->
+          <div class="input-card-glow">
+            <div class="input-bar-container">
+              <div class="input-icon">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+              </div>
+              <input 
+                type="url" 
+                id="youtubeUrlInput" 
+                class="youtube-input" 
+                placeholder="Paste YouTube video link (e.g. https://www.youtube.com/watch?v=... or youtu.be/...)"
+                autocomplete="off"
+                spellcheck="false"
+              >
+              <button class="btn btn-glass btn-sm" id="btnPasteClipboard" title="Paste from clipboard">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+                Paste
+              </button>
+              <button class="btn btn-cta" id="btnGenerate">
+                <span class="btn-cta-text">Generate Shorts</span>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+              </button>
+            </div>
+
+            <!-- Drag & Drop Alternate Zone -->
+            <div class="dropzone-mini" id="dropzoneMini">
+              <span class="dropzone-text">or drag and drop your local MP4 / MOV video file here</span>
+            </div>
+
+            <!-- Quick Viral Presets Pills -->
+            <div class="presets-row">
+              <span class="presets-label">⚡ Try 1-Click Viral Samples:</span>
+              <div class="presets-pills-list" id="presetsPillsList">
+                <!-- Dynamically rendered -->
+              </div>
+            </div>
+
+            <!-- Advanced AI Options Toggle -->
+            <div class="advanced-options-toggle">
+              <button class="btn-link" id="btnToggleAdvanced">
+                <span>⚙️ Advanced AI Settings</span>
+                <svg class="chevron-icon" id="advancedChevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </button>
+            </div>
+
+            <div class="advanced-drawer" id="advancedDrawer" style="display: none;">
+              <div class="advanced-grid">
+                
+                <div class="setting-item">
+                  <label class="setting-label">Target Clip Length</label>
+                  <select id="settingTargetLength" class="form-select">
+                    <option value="auto" selected>Auto Best (15s - 60s)</option>
+                    <option value="quick">Quick Viral Hooks (&lt; 30s)</option>
+                    <option value="story">Deep Storytelling (45s - 60s)</option>
+                  </select>
+                </div>
+
+                <div class="setting-item">
+                  <label class="setting-label">Default Captions Preset</label>
+                  <select id="settingSubtitleStyle" class="form-select">
+                    <option value="hormozi" selected>Alex Hormozi (Neon Uppercase)</option>
+                    <option value="mrbeast">MrBeast Pop (Yellow/Lime Bounce)</option>
+                    <option value="cyberpunk">Cyberpunk Neon (Cyan / Glow)</option>
+                    <option value="minimal">Minimalist Clean (Inter Pill)</option>
+                    <option value="redalert">Red Alert Impact (Warning Badge)</option>
+                  </select>
+                </div>
+
+                <div class="setting-item">
+                  <label class="setting-label">AI Reframe Mode</label>
+                  <select id="settingReframeMode" class="form-select">
+                    <option value="speaker-center" selected>Auto-Center Speaker (9:16)</option>
+                    <option value="split-screen">Split Screen (Top Video + Bottom Neon Rush)</option>
+                    <option value="blur-sides">Fit & Blur Sides (Cinematic)</option>
+                  </select>
+                </div>
+
+                <div class="setting-item">
+                  <label class="setting-label">Background Audio</label>
+                  <select id="settingBgAudio" class="form-select">
+                    <option value="lofi" selected>Lofi Chill Chords</option>
+                    <option value="phonk">Phonk 808 Bassline</option>
+                    <option value="suspense">Suspense Tension Drone</option>
+                    <option value="upbeat">Upbeat Motivational</option>
+                    <option value="none">Original Audio Only</option>
+                  </select>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Feature Highlights Bar -->
+          <div class="feature-badges-row">
+            <div class="feature-badge">
+              <span class="feature-icon">🧠</span>
+              <span class="feature-title">AI Hook Detection</span>
+              <span class="feature-desc">Identifies top retention moments</span>
+            </div>
+            <div class="feature-badge">
+              <span class="feature-icon">📐</span>
+              <span class="feature-title">Smart 9:16 Reframe</span>
+              <span class="feature-desc">Active face & speaker tracking</span>
+            </div>
+            <div class="feature-badge">
+              <span class="feature-icon">⚡</span>
+              <span class="feature-title">Hormozi / MrBeast Captions</span>
+              <span class="feature-desc">Animated karaoke word highlighting</span>
+            </div>
+            <div class="feature-badge">
+              <span class="feature-icon">🖼️</span>
+              <span class="feature-title">Viral Thumbnail Studio</span>
+              <span class="feature-desc">High-CTR clickable cover generator</span>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- SECTION 2: AI PROCESSING SCANNER (Live Pipeline)-->
+      <!-- ============================================== -->
+      <section class="scanner-section" id="scannerSection" style="display: none;">
+        <div class="scanner-card">
+          
+          <div class="scanner-header">
+            <div class="scanner-radar-wrapper">
+              <div class="scanner-radar">
+                <div class="radar-beam"></div>
+                <div class="radar-circle c1"></div>
+                <div class="radar-circle c2"></div>
+                <div class="radar-circle c3"></div>
+              </div>
+            </div>
+            <div class="scanner-header-info">
+              <div class="scanner-phase-badge" id="scannerPhaseBadge">STAGE 1 OF 5</div>
+              <h2 class="scanner-main-title" id="scannerMainTitle">Analyzing YouTube Video Stream...</h2>
+              <p class="scanner-sub-title" id="scannerSubTitle">Fetching video metadata, high-res frames, and extracting audio track</p>
+            </div>
+          </div>
+
+          <!-- Audio spectrum bars animation -->
+          <div class="spectrum-visualizer" id="spectrumVisualizer">
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+            <div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div>
+          </div>
+
+          <!-- Progress Bar -->
+          <div class="scanner-progress-container">
+            <div class="scanner-progress-bar" id="scannerProgressBar" style="width: 15%;"></div>
+          </div>
+          <div class="scanner-progress-stats">
+            <span id="scannerPercent">15%</span>
+            <span id="scannerTimer">Estimated remaining: ~4s</span>
+          </div>
+
+          <!-- Steps Checklist -->
+          <div class="scanner-steps-list">
+            <div class="step-row" id="step1">
+              <span class="step-check">✓</span>
+              <span class="step-name">1. YouTube Stream Ingestion & Frame Demuxing</span>
+              <span class="step-status">Complete</span>
+            </div>
+            <div class="step-row" id="step2">
+              <span class="step-check">●</span>
+              <span class="step-name">2. Whisper-v3 Speech-to-Text & Word Timestamp Alignment</span>
+              <span class="step-status">Processing...</span>
+            </div>
+            <div class="step-row" id="step3">
+              <span class="step-check">○</span>
+              <span class="step-name">3. Deep NLP Virality Scoring & Retention Spike Analysis</span>
+              <span class="step-status">Pending</span>
+            </div>
+            <div class="step-row" id="step4">
+              <span class="step-check">○</span>
+              <span class="step-name">4. Face Mesh Landmark & 9:16 Speaker Auto-Reframe</span>
+              <span class="step-status">Pending</span>
+            </div>
+            <div class="step-row" id="step5">
+              <span class="step-check">○</span>
+              <span class="step-name">5. Silence Trimming & Viral Shorts Clip Generation</span>
+              <span class="step-status">Pending</span>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ============================================== -->
+      <!-- SECTION 3: CLIPS OVERVIEW & RESULTS DASHBOARD -->
+      <!-- ============================================== -->
+      <section class="results-section" id="resultsSection" style="display: none;">
+        
+        <div class="results-header-banner">
+          <div class="video-meta-summary">
+            <div class="source-thumb-wrapper">
+              <img id="sourceVideoThumb" src="" alt="Video source thumbnail" class="source-thumb">
+              <span class="source-duration-tag" id="sourceVideoDuration">2:41:20</span>
+            </div>
+            <div class="source-info">
+              <div class="source-tag">ORIGINAL YOUTUBE SOURCE</div>
+              <h2 class="source-title" id="sourceVideoTitle">Video Title</h2>
+              <div class="source-channel" id="sourceVideoChannel">Channel Name</div>
+            </div>
+          </div>
+
+          <div class="results-actions">
+            <button class="btn btn-secondary" id="btnNewVideo">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+              New Video
+            </button>
+            <button class="btn btn-primary" id="btnExportAllPill">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              Export All Clips
+            </button>
+          </div>
+        </div>
+
+        <!-- Instant Download Bar for Generated Shorts -->
+        <div class="instant-downloads-bar">
+          <div class="instant-download-badge">⚡ INSTANT DOWNLOAD READY</div>
+          <div class="instant-download-info">Generated 9:16 vertical short videos ready to download:</div>
+          <div class="instant-download-links" id="instantDownloadLinksList">
+            <!-- Dynamically populated for all generated video clips -->
+          </div>
+        </div>
+
+        <!-- Filter and Sorting Bar -->
+        <div class="filter-bar">
+          <div class="filter-pills">
+            <button class="filter-pill active" data-filter="all">All Clips (<span id="countAll">0</span>)</button>
+            <button class="filter-pill" data-filter="suspense">🎬 Full Suspense (45s - 60s)</button>
+            <button class="filter-pill" data-filter="mega">🔥 Mega Viral (&gt;95%)</button>
+            <button class="filter-pill" data-filter="quick">⚡ Quick Hooks (&lt;35s)</button>
+            <button class="filter-pill" data-filter="story">💡 High Utility</button>
+          </div>
+          <div class="filter-stats">
+            <span>Sorted by <strong>AI Virality Score</strong></span>
+          </div>
+        </div>
+
+        <!-- Clips Grid Container -->
+        <div class="clips-grid" id="clipsGrid">
+          <!-- Dynamically populated clip cards -->
+        </div>
+
+      </section>
+
+      <!-- ============================================== -->
+      <!-- SECTION 4: FULL 9:16 STUDIO EDITOR MODAL       -->
+      <!-- ============================================== -->
+      <dialog class="studio-modal" id="studioModal">
+        <div class="modal-backdrop"></div>
+        <div class="studio-editor-container">
+
+          <!-- Studio Header -->
+          <div class="editor-header">
+            <div class="editor-header-left">
+              <div class="editor-clip-badge" id="editorClipScoreBadge">VIRAL SCORE: 98/100</div>
+              <h3 class="editor-clip-title" id="editorClipTitle">Clip Title</h3>
+            </div>
+            <div class="editor-header-right">
+              <button class="btn btn-glass btn-sm" id="btnDownloadThumbnailHeader">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                Thumbnail
+              </button>
+              <button class="btn btn-secondary btn-sm btn-cancel-action" id="btnCancelModal" title="Cancel &amp; Close editor">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                Cancel
+              </button>
+              <button class="btn btn-primary btn-sm" id="btnExportVideoDirect">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                Render &amp; Download MP4
+              </button>
+              <button class="btn-close" id="btnCloseModal" title="Close editor (Esc)">✕</button>
+            </div>
+          </div>
+
+          <!-- Studio Body: Split Left (Player) and Right (Editor Tabs) -->
+          <div class="editor-body">
+
+            <!-- LEFT: 9:16 Phone Player Simulator -->
+            <div class="player-column">
+              <div class="phone-frame">
+                
+                <!-- Screen Area -->
+                <div class="phone-screen">
+                  
+                  <!-- Canvas Video Layer -->
+                  <canvas id="studioCanvas" class="studio-canvas"></canvas>
+
+                  <!-- Realistic YouTube Shorts Overlay UI -->
+                  <div class="shorts-ui-overlay">
+                    
+                    <!-- Top Bar in Shorts -->
+                    <div class="shorts-top-bar">
+                      <div class="sound-tag">
+                        <span class="music-note">🎵</span>
+                        <span class="sound-title" id="shortsSoundTitle">Original Sound • Trending</span>
+                      </div>
+                    </div>
+
+                    <!-- Right Action Column (Like, Comment, Share, Sound Disc) -->
+                    <div class="shorts-action-column">
+                      <button class="shorts-action-btn" title="Like">
+                        <div class="action-icon">
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M1 21h4V9H1v12zm22-11c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.59 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2z"/></svg>
+                        </div>
+                        <span class="action-label" id="shortsLikesCount">482K</span>
+                      </button>
+
+                      <button class="shorts-action-btn" title="Comment">
+                        <div class="action-icon">
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+                        </div>
+                        <span class="action-label">3.8K</span>
+                      </button>
+
+                      <button class="shorts-action-btn" title="Share">
+                        <div class="action-icon">
+                          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M14 9V5l7 7-7 7v-4.1c-5 0-8.5 1.6-11 5.1 1-5 4-10 11-11z"/></svg>
+                        </div>
+                        <span class="action-label">Share</span>
+                      </button>
+
+                      <div class="shorts-sound-disc" id="shortsSoundDisc">
+                        <div class="disc-inner"></div>
+                      </div>
+                    </div>
+
+                    <!-- Bottom Info Area (Channel, Title, Tags) -->
+                    <div class="shorts-bottom-info">
+                      <div class="shorts-channel-row">
+                        <div class="channel-avatar">⚡</div>
+                        <span class="channel-handle" id="shortsChannelName">@CreatorStudio</span>
+                        <button class="subscribe-pill">Subscribe</button>
+                      </div>
+                      <div class="shorts-caption-title" id="shortsTitleDisplay">Viral Short Title</div>
+                    </div>
+
+                  </div>
+
+                  <!-- Big Center Play/Pause Overlay -->
+                  <div class="play-overlay-button" id="btnTogglePlay">
+                    <svg class="play-icon" id="playIconSvg" width="36" height="36" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                  </div>
+
+                </div>
+
+                <!-- Phone Bottom Bar Controls -->
+                <div class="player-controls-bar">
+                  <button class="control-btn" id="btnPlayPauseSmall" title="Play/Pause (Space)">
+                    <svg id="ctrlPlaySvg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+                  </button>
+
+                  <div class="timeline-slider-wrapper">
+                    <input type="range" id="timelineSlider" class="timeline-range" min="0" max="100" value="0" step="0.1">
+                  </div>
+
+                  <span class="time-readout" id="timeReadout">00:00 / 00:36</span>
+
+                  <button class="control-btn" id="btnMuteAudio" title="Mute/Unmute">
+                    <svg id="volumeIconSvg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                  </button>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- RIGHT: Studio Editor Tabs -->
+            <div class="editor-tabs-column">
+              
+              <!-- Tab Navigation -->
+              <div class="editor-tabs-nav">
+                <button class="tab-btn active" data-tab="tabSubtitles">✍️ Captions</button>
+                <button class="tab-btn" data-tab="tabReframe">📐 Reframe</button>
+                <button class="tab-btn" data-tab="tabAudio">🎵 Audio &amp; Music</button>
+                <button class="tab-btn" data-tab="tabTrim">⏱️ Timeline</button>
+                <button class="tab-btn" data-tab="tabThumbnail">🖼️ Thumbnail</button>
+                <button class="tab-btn" data-tab="tabSeo">🚀 Title &amp; SEO</button>
+              </div>
+
+              <!-- Tab Contents -->
+              <div class="tab-content-area">
+
+                <!-- ============================================== -->
+                <!-- TAB 1: SUBTITLES & CAPTIONS -->
+                <!-- ============================================== -->
+                <div class="tab-pane active" id="tabSubtitles">
+                  
+                  <div class="pane-section">
+                    <h4 class="pane-title">Captions Aesthetic Preset</h4>
+                    <div class="preset-cards-grid">
+                      <div class="caption-card active" data-style="hormozi">
+                        <div class="caption-sample hormozi-preview">HORMOZI NEON</div>
+                        <span class="caption-name">Alex Hormozi (Bold Pop)</span>
+                      </div>
+                      <div class="caption-card" data-style="mrbeast">
+                        <div class="caption-sample mrbeast-preview">MRBEAST</div>
+                        <span class="caption-name">MrBeast (Green Tilt)</span>
+                      </div>
+                      <div class="caption-card" data-style="cyberpunk">
+                        <div class="caption-sample cyberpunk-preview">CYBER GLOW</div>
+                        <span class="caption-name">Cyberpunk Neon</span>
+                      </div>
+                      <div class="caption-card" data-style="minimal">
+                        <div class="caption-sample minimal-preview">Minimal Inter</div>
+                        <span class="caption-name">Clean Modern Pill</span>
+                      </div>
+                      <div class="caption-card" data-style="redalert">
+                        <div class="caption-sample redalert-preview">RED ALERT</div>
+                        <span class="caption-name">Warning Box</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="pane-section">
+                    <h4 class="pane-title">Caption Placement &amp; Typography</h4>
+                    
+                    <div class="form-row">
+                      <div class="form-group flex-1">
+                        <label class="form-label">Vertical Position</label>
+                        <div class="pill-selector" id="subPosSelector">
+                          <button class="pill-btn" data-pos="top">Top</button>
+                          <button class="pill-btn" data-pos="middle">Center</button>
+                          <button class="pill-btn active" data-pos="base">Base (Recommended)</button>
+                        </div>
+                      </div>
+
+                      <div class="form-group flex-1">
+                        <label class="form-label">Font Size (<span id="subSizeLabel">48px</span>)</label>
+                        <input type="range" id="subSizeSlider" class="form-range" min="32" max="72" value="48">
+                      </div>
+                    </div>
+
+                    <div class="form-row mt-2">
+                      <div class="form-group flex-1">
+                        <label class="form-label">Font Family (Auto-matched to Video)</label>
+                        <select id="subFontSelector" class="form-control" style="background:#0f172a; color:#fff; border:1px solid #334155; border-radius:8px; padding:8px 12px; font-weight:600;">
+                          <option value='"Arial Rounded MT Bold", "Outfit", "Arial Black", sans-serif' selected>🎨 Arial Rounded Bold (Comic / Cartoon Comedy)</option>
+                          <option value='"Outfit", "Impact", "Arial Black", sans-serif'>🔥 Outfit Ultra Bold (Hormozi Viral)</option>
+                          <option value='"Impact", "Arial Black", sans-serif'>⚡ Impact Heavy (Punchy Meme)</option>
+                          <option value='"JetBrains Mono", monospace'>💻 JetBrains Mono (Tech / Cyber)</option>
+                          <option value='"Plus Jakarta Sans", sans-serif'>✨ Plus Jakarta (Clean Modern)</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    <div class="form-row mt-3">
+                      <label class="checkbox-label">
+                        <input type="checkbox" id="chkAutoEmoji" checked>
+                        <span>Auto-insert context Emojis (🔥, 💡, 🚀, 😱)</span>
+                      </label>
+                      <label class="checkbox-label">
+                        <input type="checkbox" id="chkUppercase" checked>
+                        <span>ALL UPPERCASE Captions</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div class="pane-section">
+                    <h4 class="pane-title">Interactive Transcript (Click to Edit Words)</h4>
+                    <p class="pane-helper">Click any word or timestamp to adjust the transcript in real-time:</p>
+                    <div class="transcript-editor-list" id="transcriptEditorList">
+                      <!-- Subtitle lines dynamically rendered -->
+                    </div>
+                  </div>
+
+                </div>
+
+                <!-- ============================================== -->
+                <!-- TAB 2: CROP & REFRAME -->
+                <!-- ============================================== -->
+                <div class="tab-pane" id="tabReframe">
+                  
+                  <div class="pane-section">
+                    <h4 class="pane-title">AI Layout &amp; Reframe Mode</h4>
+                    <div class="reframe-modes-grid">
+                      <div class="reframe-card active" data-mode="speaker-center">
+                        <div class="reframe-icon">🎯</div>
+                        <div class="reframe-name">Center Speaker</div>
+                        <div class="reframe-desc">Crops to 9:16 centering active speaker</div>
+                      </div>
+
+                      <div class="reframe-card" data-mode="split-screen">
+                        <div class="reframe-icon">⚡</div>
+                        <div class="reframe-name">Split Screen</div>
+                        <div class="reframe-desc">Top: Video • Bottom: Hypnotic 3D Tunnel</div>
+                      </div>
+
+                      <div class="reframe-card" data-mode="speaker-left">
+                        <div class="reframe-icon">🎙️</div>
+                        <div class="reframe-name">Host Focus (Left)</div>
+                        <div class="reframe-desc">Ideal for two-person podcasts</div>
+                      </div>
+
+                      <div class="reframe-card" data-mode="speaker-right">
+                        <div class="reframe-icon">🗣️</div>
+                        <div class="reframe-name">Guest Focus (Right)</div>
+                        <div class="reframe-desc">Ideal for podcast guest answers</div>
+                      </div>
+
+                      <div class="reframe-card" data-mode="blur-sides">
+                        <div class="reframe-icon">🎬</div>
+                        <div class="reframe-name">Blur Background</div>
+                        <div class="reframe-desc">Fitted 16:9 with cinematic blurred backdrop</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="pane-section">
+                    <h4 class="pane-title">Manual Pan &amp; Zoom</h4>
+                    
+                    <div class="form-group mb-4">
+                      <div class="d-flex justify-between">
+                        <label class="form-label">Horizontal Pan Offset</label>
+                        <span class="value-badge" id="panOffsetVal">0%</span>
+                      </div>
+                      <input type="range" id="manualPanSlider" class="form-range" min="-45" max="45" value="0">
+                    </div>
+
+                    <div class="form-group">
+                      <div class="d-flex justify-between">
+                        <label class="form-label">Digital Zoom Scale</label>
+                        <span class="value-badge" id="zoomLevelVal">1.0x</span>
+                      </div>
+                      <input type="range" id="zoomSlider" class="form-range" min="1.0" max="2.0" step="0.05" value="1.0">
+                    </div>
+                  </div>
+
+                </div>
+
+                <!-- ============================================== -->
+                <!-- TAB 3: AUDIO & B-ROLL -->
+                <!-- ============================================== -->
+                <div class="tab-pane" id="tabAudio">
+                  
+                  <div class="pane-section">
+                    <h4 class="pane-title">Background Music Track</h4>
+                    <p class="pane-helper">AI-synthesized ambient music track mixed automatically into the exported video.</p>
+                    
+                    <div class="audio-tracks-grid">
+                      <div class="audio-track-card active" data-track="lofi">
+                        <div class="track-icon">☕</div>
+                        <div class="track-name">Lofi Chill Chords</div>
+                        <div class="track-tag">Podcast &amp; Wisdom</div>
+                      </div>
+                      <div class="audio-track-card" data-track="phonk">
+                        <div class="track-icon">🏎️</div>
+                        <div class="track-name">Phonk 808 Bass</div>
+                        <div class="track-tag">High Intensity &amp; Gym</div>
+                      </div>
+                      <div class="audio-track-card" data-track="suspense">
+                        <div class="track-icon">🕵️</div>
+                        <div class="track-name">Suspense Tension</div>
+                        <div class="track-tag">Mystery &amp; Shock</div>
+                      </div>
+                      <div class="audio-track-card" data-track="upbeat">
+                        <div class="track-icon">⚡</div>
+                        <div class="track-name">Upbeat Tech Arp</div>
+                        <div class="track-tag">Business &amp; Tech</div>
+                      </div>
+                      <div class="audio-track-card" data-track="none">
+                        <div class="track-icon">🔇</div>
+                        <div class="track-name">No Music</div>
+                        <div class="track-tag">Speech Only</div>
+                      </div>
+                    </div>
+
+                    <div class="form-group mt-4">
+                      <div class="d-flex justify-between">
+                        <label class="form-label">Background Music Volume</label>
+                        <span class="value-badge" id="bgMusicVolVal">35%</span>
+                      </div>
+                      <input type="range" id="bgMusicVolSlider" class="form-range" min="0" max="1" step="0.05" value="0.35">
+                    </div>
+                  </div>
+
+                  <div class="pane-section">
+                    <h4 class="pane-title">Visual Viral Hook Banner</h4>
+                    <div class="form-group">
+                      <label class="checkbox-label mb-2">
+                        <input type="checkbox" id="chkShowHookBanner" checked>
+                        <span>Display Glowing Hook Banner At Top</span>
+                      </label>
+                      <input type="text" id="hookBannerInput" class="form-input" value="Wait till the end... 🤯">
+                    </div>
+                  </div>
+
+                  <div class="pane-section">
+                    <h4 class="pane-title">Sound Effects On Key Punches</h4>
+                    <label class="checkbox-label mb-3">
+                      <input type="checkbox" id="chkSoundFx" checked>
+                      <span>Enable Sound FX (Whoosh transitions &amp; Dings)</span>
+                    </label>
+                    <div class="sfx-buttons-row">
+                      <button class="btn btn-glass btn-sm" id="btnTestWhoosh">🔊 Test Whoosh</button>
+                      <button class="btn btn-glass btn-sm" id="btnTestDing">🔔 Test Ding</button>
+                      <button class="btn btn-glass btn-sm" id="btnTestPop">🎈 Test Pop</button>
+                    </div>
+                  </div>
+
+                </div>
+
+                <!-- ============================================== -->
+                <!-- TAB 4: TIMELINE & TRIM -->
+                <!-- ============================================== -->
+                <div class="tab-pane" id="tabTrim">
+                  <div class="pane-section">
+                    <h4 class="pane-title">Clip Range &amp; Trimming</h4>
+                    <p class="pane-helper">Adjust exact start and end seconds. The AI automatically suggested the highest virality window.</p>
+
+                    <div class="form-row">
+                      <div class="form-group flex-1">
+                        <label class="form-label">Start Time (sec)</label>
+                        <input type="number" id="trimStartInput" class="form-input" step="0.5" min="0">
+                      </div>
+                      <div class="form-group flex-1">
+                        <label class="form-label">End Time (sec)</label>
+                        <input type="number" id="trimEndInput" class="form-input" step="0.5" min="0">
+                      </div>
+                      <div class="form-group flex-1">
+                        <label class="form-label">Total Duration</label>
+                        <div class="duration-display-badge" id="trimDurationBadge">36.0s</div>
+                      </div>
+                    </div>
+
+                    <div class="quick-cut-row mt-4">
+                      <span class="form-label d-block mb-2">Quick Duration Presets:</span>
+                      <div class="btn-group">
+                        <button class="btn btn-glass btn-sm" id="btnTrim15">15s Rapid Hook</button>
+                        <button class="btn btn-glass btn-sm" id="btnTrim30">30s Fast Pace</button>
+                        <button class="btn btn-glass btn-sm" id="btnTrim55">55s Suspense Narrative Arc 🔥</button>
+                        <button class="btn btn-glass btn-sm" id="btnTrim60">60s Full Short</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- ============================================== -->
+                <!-- TAB 5: VIRAL THUMBNAIL STUDIO -->
+                <!-- ============================================== -->
+                <div class="tab-pane" id="tabThumbnail">
+                  <div class="pane-section">
+                    <h4 class="pane-title">High-CTR Clickable Thumbnail Generator</h4>
+                    <p class="pane-helper">Generates a customized 9:16 high-contrast thumbnail designed to maximize YouTube Shorts &amp; Reels click-through rate.</p>
+
+                    <div class="thumbnail-studio-layout">
+                      <!-- Thumbnail Canvas Preview -->
+                      <div class="thumb-canvas-box">
+                        <canvas id="thumbnailCanvas" class="thumb-canvas"></canvas>
+                      </div>
+
+                      <!-- Thumbnail Controls -->
+                      <div class="thumb-controls-box">
+                        
+                        <div class="form-group">
+                          <label class="form-label">Headline Text (Shock / Curiosity)</label>
+                          <input type="text" id="thumbHeadlineInput" class="form-input" value="HE IS TERRIFIED!">
+                        </div>
+
+                        <div class="form-group">
+                          <label class="form-label">Subtext / Context</label>
+                          <input type="text" id="thumbSubtextInput" class="form-input" value="Sam Altman's Warning">
+                        </div>
+
+                        <div class="form-group">
+                          <label class="form-label">Top Badge Label</label>
+                          <input type="text" id="thumbBadgeInput" class="form-input" value="VIRAL REVEAL 🔥">
+                        </div>
+
+                        <div class="form-row">
+                          <div class="form-group flex-1">
+                            <label class="form-label">Headline Color</label>
+                            <input type="color" id="thumbTextColorInput" class="color-picker-input" value="#facc15">
+                          </div>
+                          <div class="form-group flex-1">
+                            <label class="form-label">Badge Color</label>
+                            <input type="color" id="thumbAccentColorInput" class="color-picker-input" value="#ef4444">
+                          </div>
+                        </div>
+
+                        <div class="form-row mt-2">
+                          <label class="checkbox-label">
+                            <input type="checkbox" id="chkThumbBorder" checked>
+                            <span>Neon Border Frame</span>
+                          </label>
+                          <label class="checkbox-label">
+                            <input type="checkbox" id="chkThumbContrast" checked>
+                            <span>MrBeast Face Contrast Boost</span>
+                          </label>
+                        </div>
+
+                        <button class="btn btn-primary w-100 mt-4" id="btnDownloadThumbnail">
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                          Download High-Res Thumbnail (PNG)
+                        </button>
+
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- ============================================== -->
+                <!-- TAB 6: SEO, TITLES & COPYWRITING -->
+                <!-- ============================================== -->
+                <div class="tab-pane" id="tabSeo">
+                  <div class="pane-section">
+                    <h4 class="pane-title">AI Viral Title Variations</h4>
+                    <p class="pane-helper">Click any title to copy it instantly:</p>
+                    <div class="seo-titles-list" id="seoTitlesList">
+                      <!-- Dynamic Title Cards -->
+                    </div>
+                  </div>
+
+                  <div class="pane-section">
+                    <div class="d-flex justify-between align-center mb-2">
+                      <h4 class="pane-title mb-0">YouTube Shorts Description &amp; Hashtags</h4>
+                      <button class="btn btn-glass btn-sm" id="btnCopyDescription">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                        Copy Description
+                      </button>
+                    </div>
+                    <textarea id="seoDescriptionArea" class="form-textarea" rows="6" readonly></textarea>
+                  </div>
+
+                  <div class="pane-section">
+                    <div class="d-flex justify-between align-center mb-2">
+                      <h4 class="pane-title mb-0">Viral Hashtags</h4>
+                      <button class="btn btn-glass btn-sm" id="btnCopyHashtags">Copy Hashtags</button>
+                    </div>
+                    <div class="hashtags-pills" id="seoHashtagsList">
+                      <!-- Dynamic hashtag tags -->
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+          <!-- Studio Modal Footer -->
+          <div class="editor-footer">
+            <div class="footer-left">
+              <span class="clip-retention-pill" id="footerRetentionPill">Retention Score: 99.2%</span>
+              <span class="clip-hook-pill" id="footerHookPill">Hook: Shock &amp; Curiosity Gap</span>
+            </div>
+            <div class="footer-right">
+              <button class="btn btn-secondary" id="btnCopyAllMetadata">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                Copy Title + Tags
+              </button>
+              <button class="btn btn-cta" id="btnStartExportVideo">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                Render &amp; Export Short (MP4)
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </dialog>
+
+      <!-- ============================================== -->
+      <!-- MODAL: VIDEO RENDERING EXPORT PROGRESS DIALOG  -->
+      <!-- ============================================== -->
+      <dialog class="export-dialog" id="exportDialog">
+        <div class="export-dialog-box">
+          <div class="export-icon-spin">
+            <svg class="spin-svg" width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+          </div>
+          <h3 class="export-title" id="exportDialogTitle">Rendering 9:16 Video Short...</h3>
+          <p class="export-desc" id="exportDialogDesc">Burning subtitles, encoding audio tracks, and compiling MP4 video...</p>
+          
+          <div class="export-progress-track">
+            <div class="export-progress-fill" id="exportProgressFill" style="width: 0%;"></div>
+          </div>
+          <div class="export-percent-label" id="exportPercentLabel">0%</div>
+
+          <div class="export-complete-actions" id="exportCompleteActions" style="display: none;">
+            <a href="#" class="btn btn-cta w-100" id="btnDownloadExportedFile" download>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              Download Finished Video
+            </a>
+            <button class="btn btn-glass w-100 mt-2" id="btnCloseExportDialog">Done</button>
+          </div>
+        </div>
+      </dialog>
+
+      <!-- Toast Notification Container -->
+      <div class="toast-container" id="toastContainer"></div>
+
+    </main>
+  </div>
+
+  <!-- Application Logic Modules -->
+  <script type="module" src="app.js?v=2.9.0"></script>
+</body>
+</html>
