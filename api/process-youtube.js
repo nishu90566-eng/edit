@@ -53,21 +53,9 @@ export default async function handler(req, res) {
   const thumbUrl = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
   const combinedText = `${fetchedTitle} ${fetchedAuthor} ${rawUrl}`.toLowerCase();
 
-  let defaultVideo1 = "exports/clip_1_intro.mp4";
-  let defaultVideo2 = "exports/clip_3_golgappe.mp4";
-  let defaultVideo3 = "exports/clip_4_billfight.mp4";
-
-  if (combinedText.includes("gaming") || combinedText.includes("gta") || combinedText.includes("techno") || combinedText.includes("minecraft") || combinedText.includes("bgmi") || combinedText.includes("free fire")) {
-    defaultVideo1 = "exports/clip_techno_1.mp4";
-    defaultVideo2 = "exports/clip_techno_2.mp4";
-    defaultVideo3 = "exports/clip_techno_3.mp4";
-  } else if (combinedText.includes("podcast") || combinedText.includes("josh") || combinedText.includes("interview") || combinedText.includes("talk") || combinedText.includes("story") || combinedText.includes("ted")) {
-    defaultVideo1 = "exports/clip_josh_1.mp4";
-    defaultVideo2 = "exports/clip_josh_2.mp4";
-    defaultVideo3 = "exports/clip_josh_3.mp4";
-  } else if (combinedText.includes("mrbeast") || combinedText.includes("beast") || combinedText.includes("challenge") || combinedText.includes("survive")) {
-    defaultVideo1 = "exports/clip_mrbeast_1.mp4";
-    defaultVideo2 = "exports/clip_mrbeast_2.mp4";
+  let defaultVideo1 = "assets/sample_clip.mp4";
+  let defaultVideo2 = "assets/sample_clip.mp4";
+  let defaultVideo3 = "assets/sample_clip.mp4";
     defaultVideo3 = "exports/clip_mrbeast_3.mp4";
   } else if (combinedText.includes("latent") || combinedText.includes("samay") || combinedText.includes("comedy") || combinedText.includes("standup") || combinedText.includes("roast")) {
     defaultVideo1 = "exports/clip_1_intro.mp4";

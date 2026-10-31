@@ -6,6 +6,8 @@ __pycache__/
 
 # Scratch / temporary video cuts
 scratch/
+exports/*.mp4
+assets/yt_*.jpg
 
 # Operating System Files
 .DS_Store

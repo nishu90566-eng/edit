@@ -8,6 +8,7 @@ import ssl
 SSL_CTX = ssl._create_unverified_context()
 import urllib.parse
 import subprocess
+import shutil
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 import cv2
 import numpy as np
@@ -23,6 +24,10 @@ SCRATCH_DIR = os.path.join(BASE_DIR, "scratch")
 os.makedirs(EXPORTS_DIR, exist_ok=True)
 os.makedirs(ASSETS_DIR, exist_ok=True)
 os.makedirs(SCRATCH_DIR, exist_ok=True)
+
+YTDLP_BIN = shutil.which("yt-dlp") or "/Library/Frameworks/Python.framework/Versions/3.13/bin/yt-dlp"
+FFMPEG_BIN = shutil.which("ffmpeg") or "/opt/homebrew/bin/ffmpeg"
+FFPROBE_BIN = shutil.which("ffprobe") or "/opt/homebrew/bin/ffprobe"
 
 def parse_youtube_id(url):
     if not url:
@@ -95,7 +100,7 @@ def fetch_youtube_metadata(video_id, original_url):
 def get_video_duration(file_path):
     """Returns the duration of a video file in seconds using ffprobe."""
     try:
-        cmd = ["/opt/homebrew/bin/ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1:nokey=1", file_path]
+        cmd = [FFPROBE_BIN, "-v", "error", "-show_entries", "format=duration", "-of", "default=noprint_wrappers=1:nokey=1", file_path]
         res = subprocess.run(cmd, capture_output=True, text=True, timeout=6)
         return float(res.stdout.strip())
     except Exception:
@@ -111,7 +116,7 @@ def generate_real_video_short(video_id, raw_url, title, channel, thumb_rel_path,
             return False
         try:
             res = subprocess.run([
-                "/opt/homebrew/bin/ffprobe", "-v", "error",
+                FFPROBE_BIN, "-v", "error",
                 "-show_entries", "stream=codec_type",
                 "-of", "csv=p=0", p
             ], capture_output=True, text=True, timeout=5)
@@ -130,15 +135,15 @@ def generate_real_video_short(video_id, raw_url, title, channel, thumb_rel_path,
             pass
 
     # 3. Use yt-dlp & ffmpeg to download and reframe real 9:16 vertical video up to 60s
+    target_len = min(60, max(30, int(duration_sec)))
     try:
         temp_cut = os.path.join(SCRATCH_DIR, f"{video_id}_temp.mp4")
-        target_len = min(60, max(30, int(duration_sec)))
         download_len = target_len + 3
         section_str = f"*00:00:00-00:01:{download_len-60:02d}" if download_len >= 60 else f"*00:00:00-00:00:{download_len:02d}"
 
         cmd_ytdlp = [
-            "/opt/homebrew/bin/python3", "-m", "yt_dlp",
-            "--ffmpeg-location", "/opt/homebrew/bin/ffmpeg",
+            YTDLP_BIN,
+            "--ffmpeg-location", FFMPEG_BIN,
             "--extractor-args", "youtube:player_client=android,web,mweb,ios",
             "-f", "bestvideo[height<=720]+bestaudio/best[height<=720]/best",
             "--download-sections", section_str,
@@ -179,7 +184,7 @@ def generate_real_video_short(video_id, raw_url, title, channel, thumb_rel_path,
                 vf_filter = "split[orig][copy];[copy]scale=72:128,scale=720:1280:flags=bicubic[blur];[orig]scale=720:-1[scaled];[blur][scaled]overlay=0:(1280-h)/2,setsar=1"
 
             cmd_ffmpeg = [
-                "/opt/homebrew/bin/ffmpeg", "-y",
+                FFMPEG_BIN, "-y",
                 "-i", downloaded,
                 "-t", str(clip_dur),
                 "-vf", vf_filter,
@@ -197,15 +202,12 @@ def generate_real_video_short(video_id, raw_url, title, channel, thumb_rel_path,
     except Exception as e:
         print(f"[Server] Real video extraction fallback: {e}")
 
-    # Fallback to high-retention motion video with dialogue instead of static silent image
-    is_gaming = any(k in (title + " " + channel).lower() for k in ["gaming", "gameplay", "gta", "minecraft", "free fire", "bgmi", "techno"])
-    is_podcast = any(k in (title + " " + channel).lower() for k in ["podcast", "interview", "ted", "talk", "josh", "motivation", "story"])
-    if is_gaming:
-        return "exports/clip_techno_1.mp4"
-    elif is_podcast:
-        return "exports/clip_josh_1.mp4"
-    else:
-        return "exports/clip_1_intro.mp4"
+    # Fallback to generating real 9:16 animated MP4 with audio and captions
+    try:
+        return generate_mp4_short(video_id, title, channel, thumb_rel_path, duration_sec=target_len)
+    except Exception as e:
+        print(f"[Server] Fallback generate_mp4_short error: {e}")
+        return "assets/sample_clip.mp4"
 
 def generate_mp4_short(video_id, title, channel, thumb_rel_path, duration_sec=50):
     """Generates an animated 720x1280 9:16 MP4 video with burned-in subtitles and suspense narrative arc."""
@@ -317,7 +319,7 @@ def generate_mp4_short(video_id, title, channel, thumb_rel_path, duration_sec=50
         if os.path.exists(output_path):
             os.rename(output_path, temp_raw)
             cmd = [
-                "/opt/homebrew/bin/ffmpeg", "-y",
+                FFMPEG_BIN, "-y",
                 "-i", temp_raw,
                 "-f", "lavfi", "-i", "anullsrc=channel_layout=stereo:sample_rate=44100",
                 "-c:v", "libx264", "-pix_fmt", "yuv420p",

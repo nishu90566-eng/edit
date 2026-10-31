@@ -571,8 +571,6 @@ class ShortsForgeApp {
     // Process the exact custom YouTube video freshly
     await this.processCustomYouTubeVideo(videoId, rawUrl);
   }
-    await this.processCustomYouTubeVideo(videoId, rawUrl);
-  }
 
   async processCustomYouTubeVideo(videoId, originalUrl) {
     // Show AI Scanner
@@ -609,14 +607,7 @@ class ShortsForgeApp {
       }
 
       const combined = `${fetchedTitle} ${fetchedAuthor}`.toLowerCase();
-      let defaultVid = "exports/clip_1_intro.mp4";
-      if (combined.includes("gaming") || combined.includes("gta") || combined.includes("techno") || combined.includes("minecraft")) {
-        defaultVid = "exports/clip_techno_1.mp4";
-      } else if (combined.includes("podcast") || combined.includes("josh") || combined.includes("interview") || combined.includes("talk")) {
-        defaultVid = "exports/clip_josh_1.mp4";
-      } else if (combined.includes("mrbeast") || combined.includes("challenge") || combined.includes("beast")) {
-        defaultVid = "exports/clip_mrbeast_1.mp4";
-      }
+      let defaultVid = "assets/sample_clip.mp4";
 
       customVideoData = {
         id: `custom-${videoId}`,
@@ -980,7 +971,7 @@ class ShortsForgeApp {
 
   downloadClipThumbnail(clip) {
     if (!clip) return;
-    const thumbUrl = clip.thumbnailAsset || this.currentVideoData?.mediaAsset || 'assets/clip_1_intro_thumb.jpg';
+    const thumbUrl = clip.thumbnailAsset || this.currentVideoData?.mediaAsset || 'assets/podcast_studio.jpg';
     const filename = `${clip.id}_thumbnail.jpg`;
     const link = document.createElement('a');
     link.href = thumbUrl;
@@ -997,7 +988,7 @@ class ShortsForgeApp {
 
     // Load this clip's specific video footage into attached DOM video worker
     const video = this.hiddenStudioVideo || document.createElement('video');
-    const chosenSrc = clip.videoAsset || clip.exportUrl || this.currentVideoData?.videoAsset || this.currentVideoData?.exportUrl || 'exports/clip_1_intro.mp4';
+    const chosenSrc = clip.videoAsset || clip.exportUrl || this.currentVideoData?.videoAsset || this.currentVideoData?.exportUrl || 'assets/sample_clip.mp4';
     video.src = chosenSrc;
     video.crossOrigin = 'anonymous';
     video.playsInline = true;
@@ -1010,7 +1001,7 @@ class ShortsForgeApp {
 
     const thumb = new Image();
     thumb.crossOrigin = 'anonymous';
-    thumb.src = clip.thumbnailAsset || this.currentVideoData.mediaAsset || 'assets/clip_1_intro_thumb.jpg';
+    thumb.src = clip.thumbnailAsset || this.currentVideoData?.mediaAsset || 'assets/podcast_studio.jpg';
     this.activeThumbElement = thumb;
 
     // Apply active clip to video engine
@@ -1236,7 +1227,7 @@ class ShortsForgeApp {
   }
 
   // --- Real Client-Side Video Rendering & MP4/WebM Export ---
-  async executeVideoExport() {
+  async executeVideoExport(forceClientRender = false) {
     if (!this.activeClip) return;
 
     this.exportDialog.showModal();
@@ -1244,31 +1235,33 @@ class ShortsForgeApp {
     this.exportPercentLabel.textContent = '0%';
     this.exportCompleteActions.style.display = 'none';
 
-    // Check if pre-rendered high quality MP4 is available for instant download
-    if (this.activeClip.exportUrl) {
-      this.exportProgressFill.style.width = '35%';
-      this.exportPercentLabel.textContent = '35% — Compiling...';
-      await new Promise(r => setTimeout(r, 180));
-      this.exportProgressFill.style.width = '80%';
-      this.exportPercentLabel.textContent = '80% — Encoding MP4...';
-      await new Promise(r => setTimeout(r, 180));
-      this.exportProgressFill.style.width = '100%';
-      this.exportPercentLabel.textContent = '100% — Ready to Download!';
-      this.exportCompleteActions.style.display = 'block';
+    // Check if pre-rendered high quality MP4 is available on server
+    if (!forceClientRender && this.activeClip.exportUrl && this.activeClip.exportUrl.startsWith('exports/')) {
+      try {
+        const check = await fetch(this.activeClip.exportUrl, { method: 'HEAD' });
+        if (check.ok) {
+          this.exportProgressFill.style.width = '40%';
+          this.exportPercentLabel.textContent = '40% — Fetching MP4...';
+          await new Promise(r => setTimeout(r, 200));
+          this.exportProgressFill.style.width = '100%';
+          this.exportPercentLabel.textContent = '100% — Ready to Download!';
+          this.exportCompleteActions.style.display = 'block';
 
-      this.btnDownloadExportedFile.href = this.activeClip.exportUrl;
-      this.btnDownloadExportedFile.download = `${this.activeClip.title.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 30)}_short.mp4`;
-
-      // Auto-trigger download
-      this.btnDownloadExportedFile.click();
-      this.showToast('✨ Short video download started! 🚀');
-      return;
+          this.btnDownloadExportedFile.href = this.activeClip.exportUrl;
+          this.btnDownloadExportedFile.download = `${this.activeClip.title.replace(/[^a-zA-Z0-9]/g, '_').slice(0, 30)}_short.mp4`;
+          this.btnDownloadExportedFile.click();
+          this.showToast('✨ Short video download started! 🚀');
+          return;
+        }
+      } catch (e) {
+        // Fallback to client-side canvas render
+      }
     }
 
     try {
       const result = await this.videoEngine.exportVideoClip((percent) => {
         this.exportProgressFill.style.width = `${percent}%`;
-        this.exportPercentLabel.textContent = `${percent}%`;
+        this.exportPercentLabel.textContent = `${percent}% — Rendering Frames & Audio...`;
       });
 
       this.exportProgressFill.style.width = '100%';

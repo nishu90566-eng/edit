@@ -8,6 +8,7 @@ export function generateClipsForCustomVideo(youtubeData) {
   const channel = youtubeData.author_name || youtubeData.channel || "Creator Studio";
   const videoId = youtubeData.videoId || youtubeData.youtubeId || "";
   const thumbUrl = youtubeData.mediaAsset || (videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : "assets/podcast_studio.jpg");
+  const videoUrl = youtubeData.videoAsset || youtubeData.exportUrl || "assets/sample_clip.mp4";
 
   return [
     {
@@ -26,6 +27,8 @@ export function generateClipsForCustomVideo(youtubeData) {
       speakerPan: 0,
       targetDuration: 20,
       thumbnailAsset: thumbUrl,
+      videoAsset: videoUrl,
+      exportUrl: videoUrl,
       subtitles: [
         { start: 0.0, end: 3.5, text: `Wait until you see this moment right here... 😱`, emoji: "👀" },
         { start: 3.6, end: 7.2, text: `In ${title.slice(0, 26)},`, emoji: "⚡" },
@@ -67,6 +70,8 @@ export function generateClipsForCustomVideo(youtubeData) {
       speakerPan: 0,
       targetDuration: 24,
       thumbnailAsset: thumbUrl,
+      videoAsset: videoUrl,
+      exportUrl: videoUrl,
       subtitles: [
         { start: 0.0, end: 3.8, text: "Nobody expected this to happen next... 🚨", emoji: "👀" },
         { start: 3.9, end: 8.5, text: "Watch closely at this exact reaction!", emoji: "⚡" },
@@ -107,6 +112,8 @@ export function generateClipsForCustomVideo(youtubeData) {
       speakerPan: 0,
       targetDuration: 25,
       thumbnailAsset: thumbUrl,
+      videoAsset: videoUrl,
+      exportUrl: videoUrl,
       subtitles: [
         { start: 0.0, end: 3.5, text: "This is the moment that changed everything! 🤯", emoji: "💥" },
         { start: 3.6, end: 7.2, text: "Look at the expression on their faces right now!", emoji: "😱" },
