@@ -39,6 +39,11 @@ export class VideoStudioEngine {
       soundFxEnabled: true
     };
 
+    // Cancel any browser speech synthesis to ensure zero robotic background subtitle voice
+    if ('speechSynthesis' in window) {
+      try { window.speechSynthesis.cancel(); } catch(e) {}
+    }
+
     // Callbacks
     this.onTimeUpdate = null;
     this.onPlayStateChange = null;
@@ -79,27 +84,8 @@ export class VideoStudioEngine {
   }
 
   speakSubtitle(text) {
-    if (!('speechSynthesis' in window)) return;
-    if (this.lastSpokenText === text) return;
-    this.lastSpokenText = text;
-    try {
-      window.speechSynthesis.cancel();
-      // Clean emoji or non-speech characters
-      const clean = text.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '').trim();
-      if (!clean) return;
-      const utterance = new SpeechSynthesisUtterance(clean);
-      utterance.rate = 1.15;
-      utterance.pitch = 1.05;
-      utterance.volume = 0.95;
-      const voices = window.speechSynthesis.getVoices();
-      if (voices && voices.length > 0) {
-        const preferred = voices.find(v => v.lang.startsWith('en') || v.lang.startsWith('hi')) || voices[0];
-        if (preferred) utterance.voice = preferred;
-      }
-      window.speechSynthesis.speak(utterance);
-    } catch (e) {
-      // Speech synthesis unsupported or blocked
-    }
+    // Disabled: Do not read subtitles aloud in background
+    return;
   }
 
   setClip(clip, videoSourceElement, fallbackThumb = null) {
@@ -492,10 +478,6 @@ export class VideoStudioEngine {
       return false;
     });
     if (!activeSub) return;
-
-    if (this.isPlaying && activeSub.text) {
-      this.speakSubtitle(activeSub.text);
-    }
 
     // Split into words for karaoke animation
     let fullText = activeSub.text;
@@ -931,7 +913,7 @@ export class VideoStudioEngine {
     const recordedChunks = [];
     const mediaRecorder = new MediaRecorder(combinedStream, {
       mimeType: mimeType,
-      videoBitsPerSecond: 6000000 // 6 Mbps High Quality
+      videoBitsPerSecond: 12000000 // 12 Mbps Ultra High Quality (1080p 60fps)
     });
 
     mediaRecorder.ondataavailable = (e) => {

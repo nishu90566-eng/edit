@@ -145,7 +145,7 @@ def generate_real_video_short(video_id, raw_url, title, channel, thumb_rel_path,
             YTDLP_BIN,
             "--ffmpeg-location", FFMPEG_BIN,
             "--extractor-args", "youtube:player_client=android,web,mweb,ios",
-            "-f", "bestvideo[height<=720]+bestaudio/best[height<=720]/best",
+            "-f", "bestvideo[height<=1080]+bestaudio/best[height<=1080]/best",
             "--download-sections", section_str,
             "--force-keyframes-at-cuts",
             "-o", temp_cut,
@@ -165,7 +165,7 @@ def generate_real_video_short(video_id, raw_url, title, channel, thumb_rel_path,
             clip_dur = min(actual_dur, float(target_len))
             fade_out_st = max(1.0, clip_dur - 0.8)
 
-            print(f"[Server] Intelligently reframing downloaded {clip_dur:.1f}s clip to 9:16 vertical (720x1280 H.264)...")
+            print(f"[Server] Intelligently reframing downloaded {clip_dur:.1f}s clip to Ultra HD 9:16 vertical (1080x1920 H.264)...")
             
             # Intelligent Framing Detection (Indian Gaming Split vs Desi Relatable / Challenge Framing)
             is_gaming = any(k in (title + " " + channel).lower() for k in ["gaming", "gameplay", "gta", "minecraft", "free fire", "bgmi", "techno", "total"])
@@ -174,14 +174,14 @@ def generate_real_video_short(video_id, raw_url, title, channel, thumb_rel_path,
                 # Top: Creator facecam zoomed & centered, Bottom: Gameplay action, Divider: Neon Glow
                 vf_filter = (
                     "split=2[face][game];"
-                    "[face]crop=136:90:500:0,scale=720:500:force_original_aspect_ratio=increase,crop=720:500[face_top];"
-                    "[game]crop=480:360:30:0,scale=720:780:force_original_aspect_ratio=increase,crop=720:780[game_bot];"
+                    "[face]crop=in_w*0.35:in_h*0.35:in_w*0.65:0,scale=1080:760:force_original_aspect_ratio=increase,crop=1080:760[face_top];"
+                    "[game]scale=1080:1160:force_original_aspect_ratio=increase,crop=1080:1160[game_bot];"
                     "[face_top][game_bot]vstack=inputs=2[stacked];"
-                    "[stacked]drawbox=y=498:color=0x00F0FF@1:width=720:height=4:t=fill[v]"
+                    "[stacked]drawbox=y=756:color=0x00F0FF@1:width=1080:height=8:t=fill[v]"
                 )
             else:
-                # High energy creator: Full width action with silky bokeh blur background
-                vf_filter = "split[orig][copy];[copy]scale=72:128,scale=720:1280:flags=bicubic[blur];[orig]scale=720:-1[scaled];[blur][scaled]overlay=0:(1280-h)/2,setsar=1"
+                # High energy creator: Full width action with silky bokeh blur background (Full HD 1080x1920)
+                vf_filter = "split[orig][copy];[copy]scale=108:192,scale=1080:1920:flags=bicubic,gblur=sigma=22[blur];[orig]scale=1080:-1[scaled];[blur][scaled]overlay=0:(1920-h)/2,setsar=1"
 
             cmd_ffmpeg = [
                 FFMPEG_BIN, "-y",
@@ -189,15 +189,15 @@ def generate_real_video_short(video_id, raw_url, title, channel, thumb_rel_path,
                 "-t", str(clip_dur),
                 "-vf", vf_filter,
                 "-af", f"afade=t=in:st=0:d=0.2,afade=t=out:st={fade_out_st:.2f}:d=0.8",
-                "-c:v", "libx264", "-pix_fmt", "yuv420p", "-profile:v", "high", "-level", "4.1",
-                "-preset", "ultrafast", "-crf", "22",
-                "-c:a", "aac", "-b:a", "128k", "-ar", "44100",
+                "-c:v", "libx264", "-pix_fmt", "yuv420p", "-profile:v", "high", "-level", "4.2",
+                "-preset", "fast", "-crf", "18", "-b:v", "8M", "-maxrate", "12M", "-bufsize", "16M",
+                "-c:a", "aac", "-b:a", "192k", "-ar", "48000",
                 "-movflags", "+faststart",
                 output_path
             ]
             subprocess.run(cmd_ffmpeg, capture_output=True, text=True, timeout=120)
             if is_valid_short_video(output_path):
-                print(f"[Server] Successfully generated intelligent 9:16 vertical short ({clip_dur:.1f}s): {output_path}")
+                print(f"[Server] Successfully generated high-quality 1080x1920 vertical short ({clip_dur:.1f}s): {output_path}")
                 return f"exports/{output_filename}"
     except Exception as e:
         print(f"[Server] Real video extraction fallback: {e}")
@@ -217,7 +217,7 @@ def generate_mp4_short(video_id, title, channel, thumb_rel_path, duration_sec=50
     if os.path.exists(output_path) and os.path.getsize(output_path) > 10000:
         return f"exports/{output_filename}"
 
-    W, H = 720, 1280
+    W, H = 1080, 1920
     fps = 30
     duration_sec = max(30, min(60, int(duration_sec)))
     total_frames = fps * duration_sec
@@ -235,9 +235,9 @@ def generate_mp4_short(video_id, title, channel, thumb_rel_path, duration_sec=50
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
     out = cv2.VideoWriter(output_path, fourcc, fps, (W, H))
 
-    font_badge = ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial Black.ttf", 24)
-    font_sub = ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial Black.ttf", 36)
-    font_ui = ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial Bold.ttf", 20)
+    font_badge = ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial Black.ttf", 36)
+    font_sub = ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial Black.ttf", 52)
+    font_ui = ImageFont.truetype("/System/Library/Fonts/Supplemental/Arial Bold.ttf", 28)
 
     title_words = title.upper().split()[:6]
     title_short = " ".join(title_words)
@@ -321,10 +321,11 @@ def generate_mp4_short(video_id, title, channel, thumb_rel_path, duration_sec=50
             cmd = [
                 FFMPEG_BIN, "-y",
                 "-i", temp_raw,
-                "-f", "lavfi", "-i", "anullsrc=channel_layout=stereo:sample_rate=44100",
+                "-f", "lavfi", "-i", "anullsrc=channel_layout=stereo:sample_rate=48000",
                 "-c:v", "libx264", "-pix_fmt", "yuv420p",
-                "-profile:v", "high", "-level", "4.1",
-                "-c:a", "aac", "-b:a", "128k", "-shortest",
+                "-profile:v", "high", "-level", "4.2",
+                "-preset", "fast", "-crf", "18", "-b:v", "8M",
+                "-c:a", "aac", "-b:a", "192k", "-shortest",
                 "-movflags", "+faststart",
                 output_path
             ]
