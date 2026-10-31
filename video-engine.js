@@ -78,11 +78,36 @@ export class VideoStudioEngine {
     };
   }
 
+  speakSubtitle(text) {
+    if (!('speechSynthesis' in window)) return;
+    if (this.lastSpokenText === text) return;
+    this.lastSpokenText = text;
+    try {
+      window.speechSynthesis.cancel();
+      // Clean emoji or non-speech characters
+      const clean = text.replace(/[\u{1F600}-\u{1F64F}\u{1F300}-\u{1F5FF}\u{1F680}-\u{1F6FF}\u{1F1E0}-\u{1F1FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/gu, '').trim();
+      if (!clean) return;
+      const utterance = new SpeechSynthesisUtterance(clean);
+      utterance.rate = 1.15;
+      utterance.pitch = 1.05;
+      utterance.volume = 0.95;
+      const voices = window.speechSynthesis.getVoices();
+      if (voices && voices.length > 0) {
+        const preferred = voices.find(v => v.lang.startsWith('en') || v.lang.startsWith('hi')) || voices[0];
+        if (preferred) utterance.voice = preferred;
+      }
+      window.speechSynthesis.speak(utterance);
+    } catch (e) {
+      // Speech synthesis unsupported or blocked
+    }
+  }
+
   setClip(clip, videoSourceElement, fallbackThumb = null) {
     this.clip = clip;
     this.videoSource = videoSourceElement;
     this.fallbackThumb = fallbackThumb;
     this.currentTime = clip.startTime;
+    this.lastSpokenText = '';
     
     // Apply clip specific defaults if provided
     if (clip.reframeMode) {
@@ -96,8 +121,6 @@ export class VideoStudioEngine {
     }
 
     if (this.videoSource instanceof HTMLVideoElement) {
-      // Prioritize clear dialogue from original video
-      this.settings.bgMusicTrack = 'none';
       this.videoSource.currentTime = this.currentTime;
       this.videoSource.muted = false;
       this.videoSource.volume = 1.0;
@@ -202,6 +225,10 @@ export class VideoStudioEngine {
       this.animFrameId = null;
     }
     this.stopBgMusic();
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+    this.lastSpokenText = '';
 
     if (this.videoSource instanceof HTMLVideoElement) {
       this.videoSource.pause();
@@ -217,6 +244,10 @@ export class VideoStudioEngine {
     if (this.videoSource instanceof HTMLVideoElement) {
       this.videoSource.currentTime = this.currentTime;
     }
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+    this.lastSpokenText = '';
     this.renderFrame();
     if (this.onTimeUpdate) {
       this.onTimeUpdate(this.currentTime, this.clip.startTime, this.clip.endTime);
@@ -457,6 +488,10 @@ export class VideoStudioEngine {
       return false;
     });
     if (!activeSub) return;
+
+    if (this.isPlaying && activeSub.text) {
+      this.speakSubtitle(activeSub.text);
+    }
 
     // Split into words for karaoke animation
     let fullText = activeSub.text;
@@ -867,6 +902,17 @@ export class VideoStudioEngine {
 
     if (this.audioDest && this.audioDest.stream.getAudioTracks().length > 0) {
       this.audioDest.stream.getAudioTracks().forEach(track => combinedStream.addTrack(track));
+    }
+
+    if (this.videoSource instanceof HTMLVideoElement) {
+      try {
+        const vidStream = this.videoSource.captureStream ? this.videoSource.captureStream() : (this.videoSource.mozCaptureStream ? this.videoSource.mozCaptureStream() : null);
+        if (vidStream) {
+          vidStream.getAudioTracks().forEach(track => combinedStream.addTrack(track));
+        }
+      } catch (e) {
+        console.warn("Could not capture video element audio track directly:", e);
+      }
     }
 
     // Determine supported mime type

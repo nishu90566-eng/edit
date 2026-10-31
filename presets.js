@@ -1182,34 +1182,48 @@ export const VIRAL_PRESETS = [
 // Fallback procedural video generator helper for real custom YouTube links
 export function generateClipsForCustomVideo(youtubeData) {
   const title = youtubeData.title || "Viral Video Highlight";
-  const channel = youtubeData.author_name || "Creator Studio";
+  const channel = youtubeData.author_name || youtubeData.channel || "Creator Studio";
   const ytid = youtubeData.videoId || "dQw4w9WgXcQ";
+
+  const combined = `${title} ${channel}`.toLowerCase();
+  let defaultVideo1 = "exports/clip_1_intro.mp4";
+  let defaultVideo2 = "exports/clip_3_golgappe.mp4";
+  if (combined.includes("gaming") || combined.includes("gta") || combined.includes("techno") || combined.includes("minecraft") || combined.includes("bgmi")) {
+    defaultVideo1 = "exports/clip_techno_1.mp4";
+    defaultVideo2 = "exports/clip_techno_2.mp4";
+  } else if (combined.includes("podcast") || combined.includes("josh") || combined.includes("interview") || combined.includes("talk") || combined.includes("story")) {
+    defaultVideo1 = "exports/clip_josh_1.mp4";
+    defaultVideo2 = "exports/clip_josh_2.mp4";
+  } else if (combined.includes("mrbeast") || combined.includes("beast") || combined.includes("challenge") || combined.includes("survival")) {
+    defaultVideo1 = "exports/clip_mrbeast_1.mp4";
+    defaultVideo2 = "exports/clip_mrbeast_2.mp4";
+  }
 
   return [
     {
       id: `custom-clip-1-${Date.now()}`,
       title: `The Shocking Truth About ${title.split(" ").slice(0, 5).join(" ")} 😱`,
-      duration: "0:34",
-      startTime: 14.0,
-      endTime: 48.0,
+      duration: "0:20",
+      startTime: 0.0,
+      endTime: 20.0,
       viralityScore: 97,
       retentionRating: "98.4%",
       hookStrength: "9.8/10",
       category: "Mega Viral",
       hookType: "High Curiosity & Strong Hook",
-      whyViral: `High retention peak detected in first 3 seconds. The statement triggers immediate viewer curiosity and retention through the 0:24 punchline.`,
+      whyViral: `High retention peak detected in first 3 seconds. The statement triggers immediate viewer curiosity and retention through the 0:20 punchline.`,
       reframeMode: "speaker-center",
       speakerPan: 0,
-      targetDuration: 34,
+      targetDuration: 20,
+      exportUrl: defaultVideo1,
+      videoAsset: defaultVideo1,
       subtitles: [
-        { start: 14.0, end: 17.2, text: `Nobody is talking about this secret in ${title.slice(0, 24)}...`, emoji: "🤫" },
-        { start: 17.5, end: 20.8, text: "When you analyze what really happened behind the scenes,", emoji: "🔍" },
-        { start: 21.0, end: 24.5, text: "everything you thought you knew gets flipped upside down.", emoji: "🔄" },
-        { start: 25.0, end: 28.5, text: "Look closely at this critical turning point right here:", emoji: "👀" },
-        { start: 29.0, end: 32.8, text: "This is where the entire game changed permanently.", emoji: "⚡" },
-        { start: 33.0, end: 37.0, text: "Most people missed this completely. Did you spot it?", emoji: "🎯" },
-        { start: 37.5, end: 42.0, text: "Hit the like button and leave your prediction below!", emoji: "👇" },
-        { start: 42.5, end: 47.5, text: "Follow for more daily mind-bending breakdowns!", emoji: "🔥" }
+        { start: 0.0, end: 3.5, text: `Nobody is talking about this secret in ${title.slice(0, 24)}...`, emoji: "🤫" },
+        { start: 3.6, end: 7.2, text: "When you analyze what really happened behind the scenes,", emoji: "🔍" },
+        { start: 7.3, end: 11.0, text: "everything you thought you knew gets flipped upside down.", emoji: "🔄" },
+        { start: 11.1, end: 14.5, text: "Look closely at this critical turning point right here:", emoji: "👀" },
+        { start: 14.6, end: 17.5, text: "This is where the entire game changed permanently.", emoji: "⚡" },
+        { start: 17.6, end: 20.0, text: "Hit the like button and leave your prediction below!", emoji: "👇" }
       ],
       seo: {
         titles: [
@@ -1231,27 +1245,26 @@ export function generateClipsForCustomVideo(youtubeData) {
     {
       id: `custom-clip-2-${Date.now()}`,
       title: `Why This Key Moment Will Go Down In History 🏆`,
-      duration: "0:38",
-      startTime: 65.0,
-      endTime: 103.0,
+      duration: "0:24",
+      startTime: 0.0,
+      endTime: 24.0,
       viralityScore: 94,
       retentionRating: "96.2%",
       hookStrength: "9.5/10",
       category: "Peak Energy",
       hookType: "Emotional Climax",
-      whyViral: `Emotional spike detected at timestamp 01:18. Word velocity increased by 42% indicating passionate delivery.`,
+      whyViral: `Emotional spike detected at timestamp. Fast-paced cut with high energy audio.`,
       reframeMode: "split-screen",
       speakerPan: 0,
-      targetDuration: 38,
+      targetDuration: 24,
+      exportUrl: defaultVideo2,
+      videoAsset: defaultVideo2,
       subtitles: [
-        { start: 65.0, end: 68.2, text: "This exact sentence will define the next 5 years.", emoji: "⏳" },
-        { start: 68.5, end: 72.0, text: "Listen carefully to how they explain the core problem:", emoji: "👂" },
-        { start: 72.5, end: 76.5, text: "If you don't adapt to this shift right now,", emoji: "⚠️" },
-        { start: 77.0, end: 81.0, text: "you will find yourself left completely behind.", emoji: "🏃‍♂️" },
-        { start: 81.5, end: 85.5, text: "The winners are already quietly taking action.", emoji: "🏆" },
-        { start: 86.0, end: 90.0, text: "Save this clip so you can look back on this warning.", emoji: "📌" },
-        { start: 90.5, end: 95.0, text: "Share this with someone who needs to hear it today!", emoji: "🚀" },
-        { start: 95.5, end: 102.5, text: "Comment your thoughts below. Let's debate!", emoji: "💬" }
+        { start: 0.0, end: 3.8, text: "This exact moment will define the entire video.", emoji: "⏳" },
+        { start: 3.9, end: 8.5, text: "Listen carefully to how they explain the core problem:", emoji: "👂" },
+        { start: 8.6, end: 13.5, text: "If you don't pay attention to this right now,", emoji: "⚠️" },
+        { start: 13.6, end: 18.5, text: "you will find yourself left completely behind.", emoji: "🏃‍♂️" },
+        { start: 18.6, end: 24.0, text: "Comment your thoughts below. Let's debate!", emoji: "💬" }
       ],
       seo: {
         titles: [

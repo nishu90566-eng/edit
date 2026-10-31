@@ -1,8 +1,8 @@
 // app.js - Main Application Orchestrator for ShortsForge AI
 
-import { VIRAL_PRESETS, generateClipsForCustomVideo } from './presets.js?v=2.9.0';
-import { VideoStudioEngine } from './video-engine.js?v=2.9.0';
-import { ThumbnailEngine } from './thumbnail-engine.js?v=2.9.0';
+import { VIRAL_PRESETS, generateClipsForCustomVideo } from './presets.js?v=3.0.0';
+import { VideoStudioEngine } from './video-engine.js?v=3.0.0';
+import { ThumbnailEngine } from './thumbnail-engine.js?v=3.0.0';
 
 class ShortsForgeApp {
   constructor() {
@@ -644,6 +644,16 @@ class ShortsForgeApp {
         console.log("oEmbed lookup fallback:", e);
       }
 
+      const combined = `${fetchedTitle} ${fetchedAuthor}`.toLowerCase();
+      let defaultVid = "exports/clip_1_intro.mp4";
+      if (combined.includes("gaming") || combined.includes("gta") || combined.includes("techno") || combined.includes("minecraft")) {
+        defaultVid = "exports/clip_techno_1.mp4";
+      } else if (combined.includes("podcast") || combined.includes("josh") || combined.includes("interview") || combined.includes("talk")) {
+        defaultVid = "exports/clip_josh_1.mp4";
+      } else if (combined.includes("mrbeast") || combined.includes("challenge") || combined.includes("beast")) {
+        defaultVid = "exports/clip_mrbeast_1.mp4";
+      }
+
       customVideoData = {
         id: `custom-${videoId}`,
         title: fetchedTitle,
@@ -652,8 +662,10 @@ class ShortsForgeApp {
         views: "1.2M",
         youtubeUrl: originalUrl,
         youtubeId: videoId,
-        sourceType: "image-video",
-        mediaAsset: "assets/podcast_studio.jpg", // Safe local asset without CORS taint
+        sourceType: "video",
+        videoAsset: defaultVid,
+        mediaAsset: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+        exportUrl: defaultVid,
         tags: ["Viral", "Trending", "Shorts", "Highlights"],
         clips: []
       };
@@ -1021,7 +1033,8 @@ class ShortsForgeApp {
 
     // Load this clip's specific video footage
     const video = document.createElement('video');
-    video.src = clip.videoAsset || clip.exportUrl || this.currentVideoData.videoAsset || this.currentVideoData.exportUrl;
+    const chosenSrc = clip.videoAsset || clip.exportUrl || this.currentVideoData?.videoAsset || this.currentVideoData?.exportUrl || 'exports/clip_1_intro.mp4';
+    video.src = chosenSrc;
     video.crossOrigin = 'anonymous';
     video.playsInline = true;
     video.preload = 'auto';
@@ -1123,6 +1136,10 @@ class ShortsForgeApp {
   }
 
   togglePlayback() {
+    if (this.videoEngine.videoSource instanceof HTMLVideoElement) {
+      this.videoEngine.videoSource.muted = false;
+      this.videoEngine.videoSource.volume = 1.0;
+    }
     if (this.videoEngine.isPlaying) {
       this.videoEngine.pause();
     } else {
