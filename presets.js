@@ -1285,10 +1285,10 @@ export function generateClipsForCustomVideo(youtubeData) {
     },
     {
       id: `custom-clip-3-${Date.now()}`,
-      title: `The 30-Second Insight That Changes Everything 💡`,
-      duration: "0:30",
-      startTime: 120.0,
-      endTime: 150.0,
+      title: `The 25-Second Insight That Changes Everything 💡`,
+      duration: "0:25",
+      startTime: 0.0,
+      endTime: 25.0,
       viralityScore: 91,
       retentionRating: "94.5%",
       hookStrength: "9.2/10",
@@ -1297,20 +1297,22 @@ export function generateClipsForCustomVideo(youtubeData) {
       whyViral: `High shareability coefficient. Clear concise punchline that triggers rapid re-watching.`,
       reframeMode: "speaker-center",
       speakerPan: 0,
-      targetDuration: 30,
+      targetDuration: 25,
+      exportUrl: defaultVideo1,
+      videoAsset: defaultVideo1,
       subtitles: [
-        { start: 120.0, end: 123.5, text: "Here is the #1 lesson in under 30 seconds:", emoji: "⏱️" },
-        { start: 124.0, end: 127.2, text: "Stop overcomplicating the simple things.", emoji: "🎯" },
-        { start: 127.5, end: 131.0, text: "Take immediate aggressive action every single day.", emoji: "⚡" },
-        { start: 131.5, end: 135.2, text: "Momentum beats perfection every single time.", emoji: "🚀" },
-        { start: 135.5, end: 139.8, text: "Double tap if you needed this reminder today!", emoji: "❤️" },
-        { start: 140.0, end: 149.5, text: "Subscribe for daily high-impact clips and wisdom!", emoji: "🔔" }
+        { start: 0.0, end: 3.5, text: "Here is the #1 lesson in under 25 seconds:", emoji: "⏱️" },
+        { start: 3.6, end: 7.2, text: "Stop overcomplicating the simple things.", emoji: "🎯" },
+        { start: 7.3, end: 12.0, text: "Take immediate aggressive action every single day.", emoji: "⚡" },
+        { start: 12.1, end: 16.2, text: "Momentum beats perfection every single time.", emoji: "🚀" },
+        { start: 16.3, end: 20.8, text: "Double tap if you needed this reminder today!", emoji: "❤️" },
+        { start: 20.9, end: 25.0, text: "Subscribe for daily high-impact clips and wisdom!", emoji: "🔔" }
       ],
       seo: {
         titles: [
-          `The 30-Second Insight That Changes Everything 💡`,
+          `The 25-Second Insight That Changes Everything 💡`,
           `Stop Overcomplicating: Momentum Beats Perfection! 🚀`,
-          `The #1 Lesson From ${channel} In 30 Seconds`
+          `The #1 Lesson From ${channel} In 25 Seconds`
         ],
         description: `Powerful quick wisdom from ${title}.\n\n#Shorts #Productivity #Wisdom #DailyMotivation`,
         hashtags: ["#Shorts", "#Motivation", "#Success", "#Inspiration"]

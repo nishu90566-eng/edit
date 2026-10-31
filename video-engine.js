@@ -193,11 +193,15 @@ export class VideoStudioEngine {
       const delta = (now - this.lastTimestamp) / 1000;
       this.lastTimestamp = now;
 
-      if (this.videoSource instanceof HTMLVideoElement && !this.videoSource.paused) {
-        this.currentTime = this.videoSource.currentTime;
-        if (this.clip && (this.currentTime >= this.clip.endTime || this.currentTime < this.clip.startTime)) {
-          this.currentTime = this.clip.startTime;
-          this.videoSource.currentTime = this.clip.startTime;
+      if (this.videoSource instanceof HTMLVideoElement) {
+        if (!this.videoSource.paused) {
+          this.currentTime = this.videoSource.currentTime;
+          if (this.clip && (this.currentTime >= this.clip.endTime || this.currentTime < this.clip.startTime)) {
+            this.currentTime = this.clip.startTime;
+            this.videoSource.currentTime = this.clip.startTime;
+          }
+        } else if (this.videoSource.readyState >= 2) {
+          this.videoSource.play().catch(() => {});
         }
       } else {
         this.currentTime += delta;

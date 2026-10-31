@@ -1,8 +1,8 @@
 // app.js - Main Application Orchestrator for ShortsForge AI
 
-import { VIRAL_PRESETS, generateClipsForCustomVideo } from './presets.js?v=3.0.0';
-import { VideoStudioEngine } from './video-engine.js?v=3.0.0';
-import { ThumbnailEngine } from './thumbnail-engine.js?v=3.0.0';
+import { VIRAL_PRESETS, generateClipsForCustomVideo } from './presets.js?v=3.1.0';
+import { VideoStudioEngine } from './video-engine.js?v=3.1.0';
+import { ThumbnailEngine } from './thumbnail-engine.js?v=3.1.0';
 
 class ShortsForgeApp {
   constructor() {
@@ -82,6 +82,7 @@ class ShortsForgeApp {
 
     // Phone Player & Controls
     this.studioCanvas = document.getElementById('studioCanvas');
+    this.hiddenStudioVideo = document.getElementById('hiddenStudioVideo');
     this.btnTogglePlay = document.getElementById('btnTogglePlay');
     this.btnPlayPauseSmall = document.getElementById('btnPlayPauseSmall');
     this.ctrlPlaySvg = document.getElementById('ctrlPlaySvg');
@@ -1031,8 +1032,8 @@ class ShortsForgeApp {
   openStudioEditor(clip) {
     this.activeClip = clip;
 
-    // Load this clip's specific video footage
-    const video = document.createElement('video');
+    // Load this clip's specific video footage into attached DOM video worker
+    const video = this.hiddenStudioVideo || document.createElement('video');
     const chosenSrc = clip.videoAsset || clip.exportUrl || this.currentVideoData?.videoAsset || this.currentVideoData?.exportUrl || 'exports/clip_1_intro.mp4';
     video.src = chosenSrc;
     video.crossOrigin = 'anonymous';
@@ -1041,6 +1042,7 @@ class ShortsForgeApp {
     video.loop = true;
     video.muted = false;
     video.volume = 1.0;
+    try { video.load(); } catch (e) {}
     this.activeMediaElement = video;
 
     const thumb = new Image();
