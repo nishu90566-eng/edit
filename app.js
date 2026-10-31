@@ -1,8 +1,8 @@
 // app.js - Main Application Orchestrator for ShortsForge AI
 
-import { VIRAL_PRESETS, generateClipsForCustomVideo } from './presets.js?v=3.1.0';
-import { VideoStudioEngine } from './video-engine.js?v=3.1.0';
-import { ThumbnailEngine } from './thumbnail-engine.js?v=3.1.0';
+import { VIRAL_PRESETS, generateClipsForCustomVideo } from './presets.js?v=3.2.0';
+import { VideoStudioEngine } from './video-engine.js?v=3.2.0';
+import { ThumbnailEngine } from './thumbnail-engine.js?v=3.2.0';
 
 class ShortsForgeApp {
   constructor() {
@@ -15,10 +15,15 @@ class ShortsForgeApp {
     // Media source element for playback (Image or HTMLVideoElement)
     this.activeMediaElement = null;
 
+    // Clear any previous session video caches
+    try {
+      localStorage.clear();
+      sessionStorage.clear();
+    } catch (e) {}
+
     this.initDOM();
     this.initEngines();
     this.bindEvents();
-    this.renderPresetPills();
 
     // Clean initial state: hero section is visible, scanner & results hidden
     this.heroSection.style.display = 'flex';
@@ -35,8 +40,6 @@ class ShortsForgeApp {
     this.dropzoneMini = document.getElementById('dropzoneMini');
     this.localVideoFileInput = document.getElementById('localVideoFileInput');
     this.btnUploadLocal = document.getElementById('btnUploadLocal');
-    this.btnDemoPresets = document.getElementById('btnDemoPresets');
-    this.presetsPillsList = document.getElementById('presetsPillsList');
     this.btnToggleAdvanced = document.getElementById('btnToggleAdvanced');
     this.advancedDrawer = document.getElementById('advancedDrawer');
     this.advancedChevron = document.getElementById('advancedChevron');
@@ -250,10 +253,6 @@ class ShortsForgeApp {
       this.scannerSection.style.display = 'none';
       this.heroSection.style.display = 'flex';
       window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-
-    this.btnDemoPresets.addEventListener('click', () => {
-      this.loadPreset(VIRAL_PRESETS[0], true);
     });
 
     // Results Filter Pills
@@ -537,30 +536,6 @@ class ShortsForgeApp {
     });
   }
 
-  renderPresetPills() {
-    this.presetsPillsList.innerHTML = '';
-    VIRAL_PRESETS.forEach(preset => {
-      const pill = document.createElement('button');
-      pill.className = 'preset-sample-pill';
-      let icon = '▶️';
-      let label = preset.channel || preset.title.split(':')[0];
-      if (preset.id.includes('techno')) { icon = '🎮'; label = 'Techno Gamerz (GTA Showroom)'; }
-      else if (preset.id.includes('mrbeast')) { icon = '💰'; label = 'MrBeast ($250K Challenge)'; }
-      else if (preset.id.includes('josh')) { icon = '🍕'; label = 'Josh Stories (Panipuri Pizza)'; }
-      else if (preset.id.includes('not-your-type')) { icon = '🌮'; label = 'Not Your Type (Street Food)'; }
-      else if (preset.id.includes('podcast-ai')) { icon = '🤖'; label = 'Sam Altman (AGI Future)'; }
-      else if (preset.id.includes('elon')) { icon = '🚀'; label = 'Elon Musk (First Principles)'; }
-      else if (preset.id.includes('steve-jobs')) { icon = '🍎'; label = 'Steve Jobs (Stanford Speech)'; }
-      else if (preset.id.includes('huberman')) { icon = '🧠'; label = 'Dr. Huberman (Dopamine Focus)'; }
-      pill.innerHTML = `<span>${icon}</span> <span>${label}</span>`;
-      pill.addEventListener('click', () => {
-        this.youtubeUrlInput.value = preset.youtubeUrl;
-        this.loadPreset(preset, true);
-      });
-      this.presetsPillsList.appendChild(pill);
-    });
-  }
-
   // --- Parse YouTube Video URLs ---
   parseYouTubeId(url) {
     if (!url) return null;
@@ -572,8 +547,6 @@ class ShortsForgeApp {
         cleanUrl = decoded;
       } catch(e) { break; }
     }
-    if (cleanUrl.includes('7Wi38uVsW98')) return '7Wi38uVsW98';
-    if (cleanUrl.includes('pVR42qm1Rv4')) return 'pVR42qm1Rv4';
 
     const match = cleanUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|shorts\/|live\/))([\w-]{11})/);
     if (match && match[1]) return match[1];
@@ -589,25 +562,15 @@ class ShortsForgeApp {
       return;
     }
 
-    // Check if URL matches any of our rich viral presets
-    const matchedPreset = VIRAL_PRESETS.find(p => 
-      p.youtubeUrl.toLowerCase() === rawUrl.toLowerCase() || 
-      (p.youtubeId && rawUrl.includes(p.youtubeId))
-    );
-
-    if (matchedPreset) {
-      this.loadPreset(matchedPreset, true);
-      return;
-    }
-
-    // It's a custom YouTube link!
     const videoId = this.parseYouTubeId(rawUrl);
     if (!videoId) {
       this.showToast('Could not recognize YouTube URL format. Try youtu.be/... or youtube.com/watch?v=...', 4000);
       return;
     }
 
-    // Run the AI Scanner with custom video metadata
+    // Process the exact custom YouTube video freshly
+    await this.processCustomYouTubeVideo(videoId, rawUrl);
+  }
     await this.processCustomYouTubeVideo(videoId, rawUrl);
   }
 

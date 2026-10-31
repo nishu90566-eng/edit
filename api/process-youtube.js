@@ -1,6 +1,3 @@
-import fs from 'fs';
-import path from 'path';
-
 function parseYouTubeId(url) {
   if (!url) return null;
   let cleanUrl = String(url).trim();
@@ -13,9 +10,6 @@ function parseYouTubeId(url) {
       break;
     }
   }
-
-  if (cleanUrl.includes('7Wi38uVsW98')) return '7Wi38uVsW98';
-  if (cleanUrl.includes('pVR42qm1Rv4')) return 'pVR42qm1Rv4';
 
   const match = cleanUrl.match(/(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|shorts\/|live\/))([\w-]{11})/);
   if (match && match[1]) return match[1];
@@ -40,84 +34,7 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Invalid or missing YouTube URL' });
   }
 
-  // 1. Check presets cache from server_presets.json
-  try {
-    const presetsPath = path.join(process.cwd(), 'server_presets.json');
-    if (fs.existsSync(presetsPath)) {
-      const presets = JSON.parse(fs.readFileSync(presetsPath, 'utf8'));
-      if (presets[videoId]) {
-        return res.status(200).json(presets[videoId]);
-      }
-    }
-  } catch (e) {
-    console.warn('[Vercel API] Error reading server_presets.json:', e);
-  }
-
-  // 2. High-virality preset for Not Your Type
-  if (videoId === '7Wi38uVsW98' || videoId === 'pVR42qm1Rv4' || rawUrl.includes('7Wi38uVsW98') || rawUrl.includes('pVR42qm1Rv4')) {
-    const nytData = {
-      id: `yt-${videoId}`,
-      title: "NOT YOUR TYPE: Every Indian Street Food Ever !",
-      channel: "NOT YOUR TYPE",
-      duration: "8:22",
-      views: "18.4M",
-      youtubeUrl: "https://www.youtube.com/watch?v=7Wi38uVsW98",
-      youtubeId: videoId,
-      sourceType: "video",
-      videoAsset: "exports/clip_1_intro.mp4",
-      mediaAsset: "assets/clip_1_intro_thumb.jpg",
-      exportUrl: "exports/clip_1_intro.mp4",
-      tags: ["NotYourType", "IndianStreetFood", "GenZ", "Comedy", "GolGappa", "ViralShorts", "Trending"],
-      clips: [
-        {
-          id: "clip-nyt-1",
-          title: "Gen Z Friends Eating Indian Street Food! 😂 | Not Your Type Part 1 #shorts",
-          duration: "0:20",
-          startTime: 0.0,
-          endTime: 20.0,
-          viralityScore: 99,
-          retentionRating: "99.8%",
-          hookStrength: "10/10",
-          category: "Mega Viral",
-          hookType: "Explosive Street Food Craving",
-          whyViral: "Starts with an immediate relatable food craving and chaotic sprint to the street market in the first 2 seconds. Zero retention drop.",
-          reframeMode: "speaker-center",
-          speakerPan: 0,
-          targetDuration: 20,
-          exportUrl: "exports/clip_1_intro.mp4",
-          videoAsset: "exports/clip_1_intro.mp4",
-          thumbnailAsset: "assets/clip_1_intro_thumb.jpg",
-          subtitles: [
-            { start: 0.0, end: 3.8, text: "Hum sab ne apne Gen Z doston ke saath...", emoji: "🍔" },
-            { start: 3.9, end: 7.5, text: "kabhi na kabhi thele pe khade hoke khaya hi hai!", emoji: "🤤" },
-            { start: 7.6, end: 11.2, text: "Mahakal Chole Center so good bro!", emoji: "🔥" },
-            { start: 11.3, end: 14.5, text: "Kind of spicy no? Yeah...", emoji: "🥵" },
-            { start: 14.6, end: 17.5, text: "I have seen the maut also eat here!", emoji: "💀" },
-            { start: 17.6, end: 20.0, text: "On god bro yeah! [Cheekh]", emoji: "😱" }
-          ],
-          seo: {
-            titles: [
-              "Gen Z Friends Eating Indian Street Food! 😂 | Not Your Type Part 1 #shorts",
-              "Every Indian Friend at 10 PM Be Like... 🌮🏃 #shorts",
-              "When Diet Starts 'Tomorrow' | Desi Street Food Craving 💀🍟 #shorts"
-            ],
-            description: "When the late-night street food cravings hit with friends! 😂\n\n🔔 Subscribe to @NOTYOURTYPE for more relatable animated comedy!\n\n#Shorts #NotYourType #IndianStreetFood #Foodie #Comedy #Relatable #Trending #HindiComedy #Part1",
-            hashtags: ["#Shorts", "#NotYourType", "#IndianStreetFood", "#Foodie", "#Comedy", "#ViralShorts", "#Trending"]
-          },
-          thumbnail: {
-            headline: "STREET FOOD RUN! 🤤",
-            subtext: "Dieting Shuru Kal Se",
-            badge: "10M+ VIRAL 🔥",
-            color: "#facc15",
-            accentColor: "#ef4444"
-          }
-        }
-      ]
-    };
-    return res.status(200).json(nytData);
-  }
-
-  // 3. For any other custom YouTube URL: fetch live metadata via oEmbed
+  // Fetch live metadata via oEmbed for the input video
   let fetchedTitle = `YouTube Video (${videoId})`;
   let fetchedAuthor = "YouTube Creator";
 
